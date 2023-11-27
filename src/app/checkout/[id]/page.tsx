@@ -165,7 +165,13 @@ const Spinner = styled.div`
   transition: all 200ms;
 `;
 
-export const Checkout = () => {
+const Checkout = ({
+  params,
+}: {
+  params: {
+    id: string;
+  };
+}) => {
   const [loading, setLoading] = useState<Boolean>(false);
   const query = useSearchParams();
   const provider = query.get("label");

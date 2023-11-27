@@ -5,7 +5,11 @@ import Overlay from "@/app/components/Overlay";
 import Page from "@/app/components/Page";
 import HomeButton from "@/app/components/HomeButton";
 
-export const Transaction = () => {
+const Transaction = ({
+  searchParams,
+}: {
+  searchParams: Record<string, string>;
+}) => {
   const query = useSearchParams();
   return (
     <Page padding={"0em"}>
