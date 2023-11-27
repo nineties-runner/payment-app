@@ -185,6 +185,7 @@ const Checkout = ({
   } = useForm<Inputs>();
   const registerWithMask = useHookFormMask(register);
   const onSubmit: SubmitHandler<Inputs> = (data) => {
+    setLoading(true);
     router.push(
       `transaction?cardNumber=${data.cardNumber}&cardDate=${data.cardDate}&cardCvc=${data.cardCvc}&phoneNumber=${data.phoneNumber}&sum=${data.sum}`
     );
@@ -259,14 +260,7 @@ const Checkout = ({
               )}
             </PaymentInfo>
           </FlexContainer>
-          <SubmitButton
-            type="submit"
-            onClick={() => {
-              if (!errors) {
-                setLoading(true);
-              }
-            }}
-          >
+          <SubmitButton type="submit">
             Оплатить
             {loading && <Spinner />}
           </SubmitButton>
