@@ -1,7 +1,6 @@
 "use client";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import styled, { keyframes } from "styled-components";
 
@@ -86,31 +85,42 @@ const TextInput = styled.input<{ scalable: number }>`
     background-color: #1d4ed8;
     color: white;
     outline: none;
-    scale: ${(props) => (props.scalable ? 1.1 : 1.0)};
+    scale: ${(props) => (props.scalable ? 1.03 : 1.0)};
   }
 
   &:focus::placeholder {
     color: white;
-  }
-
-  &::after {
-    content: "s";
-    width: 40px;
-    height: 40px;
-    background-color: red;
   }
 `;
 TextInput.defaultProps = {
   scalable: 0,
 };
 
-const ErrorMsg = styled.span`
+const ErrorWrapper = styled.div`
+  margin: auto;
+  background-color: #dc262616;
+  border: 1px #dc262655 solid;
+  border-radius: 0.5em;
+  width: fit-content;
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+
+  &:empty {
+    display: none;
+  }
+`;
+
+const StyledErrorMsg = styled.span`
   color: #dc2626;
   font-size: 0.7em;
-  max-height: 0px;
-  margin-top: -1em;
-  top: -1em;
+  font-weight: 500;
 `;
+
+const ErrorMsg = ({ message }: { message?: string | null }) => {
+  return <StyledErrorMsg>{`❗` + message}</StyledErrorMsg>;
+};
 
 const SubmitButton = styled.button`
   display: flex;
@@ -165,14 +175,8 @@ const Spinner = styled.div`
   transition: all 200ms;
 `;
 
-const Checkout = ({
-  params,
-}: {
-  params: {
-    id: string;
-  };
-}) => {
-  const [loading, setLoading] = useState<Boolean>(false);
+const Checkout = () => {
+  const [loading, setLoading] = useState(false);
   const query = useSearchParams();
   const provider = query.get("label");
   const router = useRouter();
@@ -180,7 +184,6 @@ const Checkout = ({
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<Inputs>();
   const registerWithMask = useHookFormMask(register);
@@ -208,30 +211,37 @@ const Checkout = ({
                 scalable={1}
                 {...registerWithMask("cardNumber", ["9999 9999 9999 9999"], {
                   required: "Укажите действительные данные карты",
+                  pattern: {
+                    value: /[0-9|\s]{19}/,
+                    message: "Неверный формат номера карты",
+                  },
                 })}
               />
+
               <TextInput
                 placeholder="ММ/ГГ"
                 scalable={1}
                 {...registerWithMask("cardDate", "datetime", {
                   required: "Укажите дату",
-                  inputFormat: "mm-yy",
+                  inputFormat: "mm/yy",
+                  pattern: {
+                    value: /^(0[1-9]|1[0-2])\/?([0-9]{2})$/,
+                    message: "Неверный формат даты экспирации",
+                  },
                 })}
               />
+
               <TextInput
                 placeholder="CVC"
                 scalable={1}
                 {...registerWithMask("cardCvc", ["999"], {
                   required: "Укажите номер CVC",
+                  pattern: {
+                    value: /[0-9]{3}/,
+                    message: "Неверный формат номера CVC",
+                  },
                 })}
               />
-              {(errors.cardNumber || errors.cardDate || errors.cardCvc) && (
-                <ErrorMsg
-                  style={{ margin: "auto", marginTop: "-0.5em", top: "-0.5em" }}
-                >
-                  {errors.cardNumber?.message}
-                </ErrorMsg>
-              )}
             </CardInfo>
             <PaymentInfo>
               <TextInput
@@ -240,24 +250,24 @@ const Checkout = ({
                 placeholder="Номер для пополнения"
                 {...registerWithMask("phoneNumber", ["+7 (999) 999 99-99"], {
                   required: "Укажите номер телефона",
+                  pattern: {
+                    value: /.7 .[0-9]{3}. [0-9]{3} [0-9]{2}-[0-9]{2}/,
+                    message: "Неверный формат номера телефона",
+                  },
                 })}
               />
-              {errors.phoneNumber?.message && (
-                <ErrorMsg>{errors.phoneNumber?.message}</ErrorMsg>
-              )}
               <TextInput
                 type="text"
                 scalable={0}
                 placeholder="Сумма платежа"
-                {...registerWithMask("sum", "numeric", {
-                  max: 1000,
-                  min: 0,
+                {...registerWithMask("sum", "9{1,4} руб.", {
                   required: "Укажите сумму, макс. 1000р.",
+                  pattern: {
+                    value: /^(1000|[0-9]{1,3}) руб./,
+                    message: "Укажите сумму, макс. 1000р. ",
+                  },
                 })}
               />
-              {errors.sum?.message && (
-                <ErrorMsg>{errors.sum?.message}</ErrorMsg>
-              )}
             </PaymentInfo>
           </FlexContainer>
           <SubmitButton type="submit">
@@ -265,6 +275,17 @@ const Checkout = ({
             {loading && <Spinner />}
           </SubmitButton>
           <HomeButton />
+          <ErrorWrapper>
+            {errors.cardNumber && (
+              <ErrorMsg message={errors.cardNumber?.message} />
+            )}
+            {errors.cardDate && <ErrorMsg message={errors.cardDate?.message} />}
+            {errors.cardCvc && <ErrorMsg message={errors.cardCvc?.message} />}
+            {errors.phoneNumber && (
+              <ErrorMsg message={errors.phoneNumber?.message} />
+            )}
+            {errors.sum && <ErrorMsg message={errors.sum?.message} />}
+          </ErrorWrapper>
         </PayWindow>
       </form>
     </Page>

@@ -22,6 +22,7 @@ const Button = styled.button`
   &:hover {
     scale: 1.03;
     background-color: #1d4ed8;
+    color: white;
   }
   &:active {
     scale: 1;

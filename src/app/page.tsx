@@ -20,8 +20,10 @@ const Intro = styled(motion.div)`
 `;
 
 const MessageSpan = styled.span`
-  font-size: 0.5em;
-  margin-bottom: 1em;
+  text-align: center;
+  font-size: 0.7em;
+  padding: 0.5em;
+  margin-top: -0.5em;
 `;
 
 const ProviderOption = styled.div`
@@ -36,6 +38,13 @@ const ProviderOption = styled.div`
     border-left: 0.5em solid #1d4ed8;
     background-color: #bfdbfe;
     color: #1d4ed8;
+  }
+
+  &:hover:after {
+    content: "➔";
+    position: absolute;
+    opacity: 0.8;
+    right: 2em;
   }
 `;
 

@@ -1,6 +1,29 @@
 "use client";
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import Header from "./Header";
+
+const GlobalStyle = createGlobalStyle`
+  *,
+  html,
+  body {
+   margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    max-height: 100vh;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  body {
+    background-color: #cbd5e1;
+  }
+`;
 
 const Container = styled.div`
   margin: auto;
@@ -32,12 +55,13 @@ export const Page = ({
   padding?: string | number;
 }) => {
   return (
-    <>
+    <main>
+      <GlobalStyle />
       <Container>
         <Header />
         <Content padding={padding}>{children}</Content>
       </Container>
-    </>
+    </main>
   );
 };
 
