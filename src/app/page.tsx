@@ -9,6 +9,8 @@ const Intro = styled(motion.div)`
   height: 100%;
   background-color: #1d4ed8;
   display: flex;
+  flex-direction: column;
+  gap: 0.25em;
   position: absolute;
   justify-content: center;
   align-items: center;
@@ -17,6 +19,15 @@ const Intro = styled(motion.div)`
   color: white;
   top: 0;
   left: 0;
+`;
+
+const IntroTextWrapper = styled(motion.span)`
+  padding: 0.25em;
+`;
+
+const IntroSmallText = styled(motion.span)`
+  font-size: 0.25em;
+  opacity: 0.8;
 `;
 
 const MessageSpan = styled.span`
@@ -68,15 +79,37 @@ const providers = [
   },
 ];
 
-export default function Home() {
+const Home = () => {
   return (
     <Page>
       <Intro
         initial={{ opacity: 1 }}
-        animate={{ opacity: 0, pointerEvents: "none" }}
-        transition={{ delay: 1, duration: 0.5 }}
+        animate={{ opacity: 1, pointerEvents: "none", y: "-100%" }}
+        transition={{ delay: 0.8, duration: 0.4, ease: "easeInOut" }}
       >
-        ￠PAY APP
+        <IntroTextWrapper
+          initial={{ backgroundColor: "#1d4ed8", color: "#ffffff" }}
+          animate={{ backgroundColor: "#ffffff", color: "#1d4ed8" }}
+          transition={{ delay: 0.5, duration: 0.2 }}
+        >
+          {"￠PAY APP".split("").map((char, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: -100 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05, duration: 0.1 }}
+            >
+              {char}
+            </motion.span>
+          ))}
+        </IntroTextWrapper>
+        <IntroSmallText
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          2020 — 2023
+        </IntroSmallText>
       </Intro>
       <ProviderList>
         <MessageSpan>Выберите оператора</MessageSpan>
@@ -96,4 +129,6 @@ export default function Home() {
       </ProviderList>
     </Page>
   );
-}
+};
+
+export default Home;

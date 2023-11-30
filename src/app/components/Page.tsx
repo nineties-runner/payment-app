@@ -6,7 +6,7 @@ const GlobalStyle = createGlobalStyle`
   *,
   html,
   body {
-   margin: 0;
+    margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
@@ -32,6 +32,7 @@ const Container = styled.div`
   background-color: #f8fafc;
   font-size: 2em;
   position: relative;
+  overflow: hidden;
   @media (max-width: 1024px) {
     width: 100%;
   }
