@@ -1,5 +1,6 @@
 "use client";
 import styled, { createGlobalStyle } from "styled-components";
+
 import Header from "./Header";
 
 const GlobalStyle = createGlobalStyle`

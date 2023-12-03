@@ -1,68 +1,8 @@
 "use client";
 import Link from "next/link";
-import Page from "./components/Page";
+import Page from "./shared/components/Page";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-
-const Intro = styled(motion.div)`
-  width: 100%;
-  height: 100%;
-  background-color: #1d4ed8;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25em;
-  position: absolute;
-  justify-content: center;
-  align-items: center;
-  font-size: 2em;
-  font-weight: 800;
-  color: white;
-  top: 0;
-  left: 0;
-`;
-
-const IntroTextWrapper = styled(motion.span)`
-  padding: 0.25em;
-`;
-
-const IntroSmallText = styled(motion.span)`
-  font-size: 0.25em;
-  opacity: 0.8;
-`;
-
-const MessageSpan = styled.span`
-  text-align: center;
-  font-size: 0.7em;
-  padding: 0.5em;
-  margin-top: -0.5em;
-`;
-
-const ProviderOption = styled.div`
-  width: 100%;
-  height: 2em;
-  display: flex;
-  align-items: center;
-  border: none;
-  transition: all 200ms;
-  padding: 0.5em;
-  &:hover {
-    border-left: 0.5em solid #1d4ed8;
-    background-color: #bfdbfe;
-    color: #1d4ed8;
-  }
-
-  &:hover:after {
-    content: "➔";
-    position: absolute;
-    opacity: 0.8;
-    right: 2em;
-  }
-`;
-
-const ProviderList = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
 
 const providers = [
   {
@@ -132,3 +72,63 @@ const Home = () => {
 };
 
 export default Home;
+
+const Intro = styled(motion.div)`
+  width: 100%;
+  height: 100%;
+  background-color: #1d4ed8;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em;
+  font-weight: 800;
+  color: white;
+  top: 0;
+  left: 0;
+`;
+
+const IntroTextWrapper = styled(motion.span)`
+  padding: 0.25em;
+`;
+
+const IntroSmallText = styled(motion.span)`
+  font-size: 0.25em;
+  opacity: 0.8;
+`;
+
+const MessageSpan = styled.span`
+  text-align: center;
+  font-size: 0.7em;
+  padding: 0.5em;
+  margin-top: -0.5em;
+`;
+
+const ProviderOption = styled.div`
+  width: 100%;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  border: none;
+  transition: all 200ms;
+  padding: 0.5em;
+  &:hover {
+    border-left: 0.5em solid #1d4ed8;
+    background-color: #bfdbfe;
+    color: #1d4ed8;
+  }
+
+  &:hover:after {
+    content: "➔";
+    position: absolute;
+    opacity: 0.8;
+    right: 2em;
+  }
+`;
+
+const ProviderList = styled.div`
+  display: flex;
+  flex-direction: column;
+`;

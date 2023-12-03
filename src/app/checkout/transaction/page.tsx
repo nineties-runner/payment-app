@@ -1,9 +1,9 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 
-import Overlay from "@/app/components/Overlay";
-import Page from "@/app/components/Page";
-import HomeButton from "@/app/components/HomeButton";
+import Page from "@/app/shared/components/Page";
+import Overlay from "@/app/shared/components/Overlay";
+import HomeButton from "@/app/shared/components/HomeButton";
 
 const Transaction = () => {
   const query = useSearchParams();

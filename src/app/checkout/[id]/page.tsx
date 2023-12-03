@@ -1,23 +1,120 @@
 "use client";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useState } from "react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useHookFormMask } from "use-mask-input";
 import { useSearchParams } from "next/navigation";
 import styled, { keyframes } from "styled-components";
+import { useForm, SubmitHandler } from "react-hook-form";
 
-import Page from "@/app/components/Page";
-import { useHookFormMask } from "use-mask-input";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import HomeButton from "@/app/components/HomeButton";
+import Page from "@/app/shared/components/Page";
+import HomeButton from "@/app/shared/components/HomeButton";
 
-type Inputs = {
-  cardNumber: string;
-  cardDate: string;
-  cardCvc: string;
-  phoneNumber: string;
-  sum: string;
-  // provider: string | null;
+import VALIDATION from "@/app/shared/utils/validation";
+import { Inputs } from "@/app/shared/utils/types";
+
+const Checkout = () => {
+  const [loading, setLoading] = useState(false);
+  const query = useSearchParams();
+  const provider = query.get("label");
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>();
+  const registerWithMask = useHookFormMask(register);
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    setLoading(true);
+    router.push(
+      `transaction?cardNumber=${data.cardNumber}&cardDate=${data.cardDate}&cardCvc=${data.cardCvc}&phoneNumber=${data.phoneNumber}&sum=${data.sum}`
+    );
+  };
+
+  return (
+    <Page>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <PayWindow
+          initial={{ translateY: 200, opacity: 0 }}
+          animate={{ translateY: 0, opacity: 1 }}
+          transition={{ duration: 0.7, ease: "easeInOut" }}
+        >
+          <MessageSpan>Оплата мобильной связи {provider}</MessageSpan>
+          <FlexContainer>
+            <CardInfo>
+              <TextInput
+                placeholder="Номер карты"
+                style={{ width: "100%" }}
+                scalable={1}
+                {...registerWithMask(
+                  "cardNumber",
+                  ["9999 9999 9999 9999"],
+                  VALIDATION.CARD_NUMBER
+                )}
+              />
+              <TextInput
+                placeholder="ММ/ГГ"
+                scalable={1}
+                {...registerWithMask(
+                  "cardDate",
+                  "datetime",
+                  VALIDATION.CARD_DATE
+                )}
+              />
+
+              <TextInput
+                placeholder="CVC"
+                scalable={1}
+                {...registerWithMask("cardCvc", ["999"], VALIDATION.CARD_CVC)}
+              />
+            </CardInfo>
+            <PaymentInfo>
+              <TextInput
+                type="text"
+                scalable={0}
+                placeholder="Номер для пополнения"
+                {...registerWithMask(
+                  "phoneNumber",
+                  ["+7 (999) 999 99-99"],
+                  VALIDATION.PHONE_NUMBER
+                )}
+              />
+              <TextInput
+                type="text"
+                scalable={0}
+                placeholder="Сумма платежа"
+                {...registerWithMask(
+                  "sum",
+                  "9{1,4} руб.",
+                  VALIDATION.PAYMENT_SUM
+                )}
+              />
+            </PaymentInfo>
+          </FlexContainer>
+          <SubmitButton type="submit">
+            Оплатить
+            {loading && <Spinner />}
+          </SubmitButton>
+          <HomeButton />
+          <ErrorWrapper>
+            {errors.cardNumber && (
+              <ErrorMsg message={errors.cardNumber?.message} />
+            )}
+            {errors.cardDate && <ErrorMsg message={errors.cardDate?.message} />}
+            {errors.cardCvc && <ErrorMsg message={errors.cardCvc?.message} />}
+            {errors.phoneNumber && (
+              <ErrorMsg message={errors.phoneNumber?.message} />
+            )}
+            {errors.sum && <ErrorMsg message={errors.sum?.message} />}
+          </ErrorWrapper>
+        </PayWindow>
+      </form>
+    </Page>
+  );
 };
+
+export default Checkout;
 
 const PayWindow = styled(motion.div)`
   min-height: 100%;
@@ -174,122 +271,3 @@ const Spinner = styled.div`
   border-radius: 50%;
   transition: all 200ms;
 `;
-
-const Checkout = () => {
-  const [loading, setLoading] = useState(false);
-  const query = useSearchParams();
-  const provider = query.get("label");
-  const router = useRouter();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Inputs>();
-  const registerWithMask = useHookFormMask(register);
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    setLoading(true);
-    router.push(
-      `transaction?cardNumber=${data.cardNumber}&cardDate=${data.cardDate}&cardCvc=${data.cardCvc}&phoneNumber=${data.phoneNumber}&sum=${data.sum}`
-    );
-  };
-
-  return (
-    <Page>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <PayWindow
-          initial={{ translateY: 200, opacity: 0 }}
-          animate={{ translateY: 0, opacity: 1 }}
-          transition={{ duration: 0.7, ease: "easeInOut" }}
-        >
-          <MessageSpan>Оплата мобильной связи {provider}</MessageSpan>
-          <FlexContainer>
-            <CardInfo>
-              <TextInput
-                placeholder="Номер карты"
-                style={{ width: "100%" }}
-                scalable={1}
-                {...registerWithMask("cardNumber", ["9999 9999 9999 9999"], {
-                  required: "Укажите действительные данные карты",
-                  pattern: {
-                    value: /[0-9|\s]{19}/,
-                    message: "Неверный формат номера карты",
-                  },
-                })}
-              />
-
-              <TextInput
-                placeholder="ММ/ГГ"
-                scalable={1}
-                {...registerWithMask("cardDate", "datetime", {
-                  required: "Укажите дату",
-                  inputFormat: "mm/yy",
-                  pattern: {
-                    value: /^(0[1-9]|1[0-2])\/?([0-9]{2})$/,
-                    message: "Неверный формат даты экспирации",
-                  },
-                })}
-              />
-
-              <TextInput
-                placeholder="CVC"
-                scalable={1}
-                {...registerWithMask("cardCvc", ["999"], {
-                  required: "Укажите номер CVC",
-                  pattern: {
-                    value: /[0-9]{3}/,
-                    message: "Неверный формат номера CVC",
-                  },
-                })}
-              />
-            </CardInfo>
-            <PaymentInfo>
-              <TextInput
-                type="text"
-                scalable={0}
-                placeholder="Номер для пополнения"
-                {...registerWithMask("phoneNumber", ["+7 (999) 999 99-99"], {
-                  required: "Укажите номер телефона",
-                  pattern: {
-                    value: /.7 .[0-9]{3}. [0-9]{3} [0-9]{2}-[0-9]{2}/,
-                    message: "Неверный формат номера телефона",
-                  },
-                })}
-              />
-              <TextInput
-                type="text"
-                scalable={0}
-                placeholder="Сумма платежа"
-                {...registerWithMask("sum", "9{1,4} руб.", {
-                  required: "Укажите сумму, макс. 1000р.",
-                  pattern: {
-                    value: /^(1000|[0-9]{1,3}) руб./,
-                    message: "Укажите сумму, макс. 1000р. ",
-                  },
-                })}
-              />
-            </PaymentInfo>
-          </FlexContainer>
-          <SubmitButton type="submit">
-            Оплатить
-            {loading && <Spinner />}
-          </SubmitButton>
-          <HomeButton />
-          <ErrorWrapper>
-            {errors.cardNumber && (
-              <ErrorMsg message={errors.cardNumber?.message} />
-            )}
-            {errors.cardDate && <ErrorMsg message={errors.cardDate?.message} />}
-            {errors.cardCvc && <ErrorMsg message={errors.cardCvc?.message} />}
-            {errors.phoneNumber && (
-              <ErrorMsg message={errors.phoneNumber?.message} />
-            )}
-            {errors.sum && <ErrorMsg message={errors.sum?.message} />}
-          </ErrorWrapper>
-        </PayWindow>
-      </form>
-    </Page>
-  );
-};
-
-export default Checkout;
